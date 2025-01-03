@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Page</title>
+    <style>
+        body {
+            position: relative;
+            padding-bottom: 60px;
+            min-height: 100vh;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .options {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .options li {
+            margin: 10px 0;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .correct-answer {
+            background-color: #dff0d8;
+            color: #3c763d;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .wrong-answer {
+            background-color: #f2dede;
+            color: #a94442;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .score-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 1px solid #ddd;
+        }
+        .footer p {
+            margin: 0;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz Soruları</h1>
+    
+    {% if score is defined %}
+    <div class="score-display">
+        <strong>Skor: {{ score }}/{{ total_questions }}</strong>
+        <br>
+        <small>En Yüksek Skor: {{ max_score }}/{{ total_questions }}</small>
+    </div>
+    {% endif %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert" style="margin: 20px 0; padding: 10px; background-color: #d4edda; border-radius: 4px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('submit_quiz') }}" method="POST">
+        {% for question in questions %}
+        <div class="question">
+            <h3>{{ loop.index }}. {{ question.question_text }}</h3>
+            <ul class="options">
+                {% for option_num, option in [
+                    (1, question.option1),
+                    (2, question.option2),
+                    (3, question.option3),
+                    (4, question.option4)
+                ] %}
+                <li {% if submitted_answers is defined %}
+                        {% if submitted_answers[question.id] == option and option == question.correct_answer %}
+                            class="correct-answer"
+                        {% elif submitted_answers[question.id] == option and option != question.correct_answer %}
+                            class="wrong-answer"
+                        {% elif option == question.correct_answer %}
+                            class="correct-answer"
+                        {% endif %}
+                    {% endif %}>
+                    <input type="radio" 
+                           name="answer{{ question.id }}" 
+                           value="{{ option }}" 
+                           id="q{{ question.id }}o{{ option_num }}" 
+                           required
+                           {% if submitted_answers is defined %}disabled{% endif %}>
+                    <label for="q{{ question.id }}o{{ option_num }}">{{ option }}</label>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+        {% if submitted_answers is not defined %}
+            <button type="submit" class="submit-btn">Cevapları Gönder</button>
+        {% else %}
+            <a href="{{ url_for('quiz_page') }}" class="submit-btn" style="text-decoration: none; display: inline-block;">
+                Yeniden Dene
+            </a>
+        {% endif %}
+    </form>
+
+    <div class="footer">
+        <p>Made by Alper Melkeli</p>
+    </div>
+</body>
+</html>
