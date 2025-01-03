@@ -16,6 +16,7 @@ my-flask-app
 │       └── quiz_template.html
 ├── run.py
 ├── requirements.txt
+├── seed_database.py
 └── README.md
 ```
 
@@ -36,6 +37,7 @@ my-flask-app
 
 To run the application, execute the following command:
 ```
+python seed_database.py
 python run.py
 ```
 
