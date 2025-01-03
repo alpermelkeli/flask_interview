@@ -13,7 +13,7 @@ my-flask-app
 │   ├── routes.py
 |   |── models.py
 │   └── templates
-│       └── index.html
+│       └── quiz_template.html
 ├── run.py
 ├── requirements.txt
 └── README.md
